@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://opensourcevk.github.io/salary-calculator-india/sitemap.xml
