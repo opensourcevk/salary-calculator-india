@@ -1,7 +1,5 @@
 export const earningFields = [
-  { key: 'basic', label: 'Basic Salary', helper: 'Fixed pay used as the core of the salary structure.' },
   { key: 'hra', label: 'House Rent Allowance', helper: 'Monthly HRA paid to the employee.' },
-  { key: 'specialAllowance', label: 'Special Allowance', helper: 'Flexible allowance added to monthly salary.' },
   { key: 'conveyance', label: 'Conveyance / Transport', helper: 'Travel or commute-related allowance.' },
   { key: 'medical', label: 'Medical Allowance', helper: 'Monthly medical support component.' },
   { key: 'lta', label: 'Leave Travel Allowance', helper: 'Average monthly value of LTA.' },
@@ -10,9 +8,8 @@ export const earningFields = [
 ];
 
 export const deductionFields = [
-  { key: 'employeePf', label: 'Employee PF', helper: 'Provident Fund contribution deducted from salary.' },
-  { key: 'professionalTax', label: 'Professional Tax', helper: 'Monthly state professional tax deducted from salary. It reduces take-home but is not deducted from taxable income here.' },
-  { key: 'nps', label: 'Employee NPS', helper: 'Employee-side NPS contribution. This reduces take-home but is not treated as a tax deduction here.' },
+  { key: 'professionalTax', label: 'Professional Tax', helper: 'Monthly state professional tax deducted from salary.' },
+  { key: 'nps', label: 'Employee NPS', helper: 'Employee-side NPS contribution. This reduces take-home.' },
   { key: 'esi', label: 'ESI', helper: 'Employee State Insurance deduction when applicable.' },
   { key: 'insurance', label: 'Insurance Premium', helper: 'Mediclaim or employer-collected insurance premium.' },
   { key: 'gratuity', label: 'Gratuity', helper: 'Include only if it is actually deducted from the employee payout.' },
@@ -22,15 +19,15 @@ export const deductionFields = [
 
 export const presets = {
   fresher: {
-    basic: 25000,
+    annualCtc: 622200,
+    basicPercent: 48,
+    pfCapped: true,
     hra: 12500,
-    specialAllowance: 9000,
     conveyance: 1600,
     medical: 1250,
     lta: 0,
     bonus: 2500,
     otherEarnings: 0,
-    employeePf: 1800,
     professionalTax: 200,
     nps: 0,
     esi: 0,
@@ -40,15 +37,15 @@ export const presets = {
     otherDeductions: 0
   },
   midLevel: {
-    basic: 50000,
+    annualCtc: 1416000,
+    basicPercent: 42.5,
+    pfCapped: true,
     hra: 25000,
-    specialAllowance: 22000,
     conveyance: 3000,
     medical: 2500,
     lta: 3500,
     bonus: 8000,
     otherEarnings: 4000,
-    employeePf: 1800,
     professionalTax: 200,
     nps: 4000,
     esi: 0,
@@ -58,15 +55,15 @@ export const presets = {
     otherDeductions: 0
   },
   senior: {
-    basic: 90000,
+    annualCtc: 2640000,
+    basicPercent: 41,
+    pfCapped: true,
     hra: 45000,
-    specialAllowance: 30000,
     conveyance: 5000,
     medical: 5000,
     lta: 5000,
     bonus: 25000,
     otherEarnings: 15000,
-    employeePf: 1800,
     professionalTax: 200,
     nps: 10000,
     esi: 0,

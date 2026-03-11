@@ -1,6 +1,8 @@
 export const NEW_REGIME_STANDARD_DEDUCTION = 75000;
 export const NEW_REGIME_REBATE_THRESHOLD = 1200000;
 export const HEALTH_AND_EDUCATION_CESS_RATE = 0.04;
+export const EPF_RATE = 0.12;
+export const EPF_MONTHLY_WAGE_CEILING = 15000;
 
 export const NEW_REGIME_SLABS = [
   { upto: 400000, rate: 0 },
@@ -24,10 +26,27 @@ export const parseCurrency = (value) => {
   return Number.isFinite(amount) && amount > 0 ? amount : 0;
 };
 
+export const parsePercent = (value) => {
+  const amount = Number(value);
+
+  if (!Number.isFinite(amount) || amount < 0) {
+    return 0;
+  }
+
+  return amount > 100 ? 100 : amount;
+};
+
 export const roundCurrency = (value) => Math.round(value);
 
 export const sumFields = (values, fields) =>
   fields.reduce((total, field) => total + parseCurrency(values[field.key]), 0);
+
+export const calculateEmployeePf = (basicMonthly, pfCapped = true) => {
+  const monthlyBasic = parseCurrency(basicMonthly);
+  const pfWage = pfCapped ? Math.min(monthlyBasic, EPF_MONTHLY_WAGE_CEILING) : monthlyBasic;
+
+  return roundCurrency(pfWage * EPF_RATE);
+};
 
 export const calculateSlabTax = (taxableIncome) => {
   let previousLimit = 0;
@@ -99,30 +118,55 @@ export const calculateNewRegimeIncomeTax = (annualGross, annualProfessionalTax =
   };
 };
 
-export const calculateSalary = ({ earnings, deductions }) => {
-  const monthlyGross = sumFields(earnings, Object.keys(earnings).map((key) => ({ key })));
-  const monthlyManualDeductions = sumFields(
+export const calculateSalary = ({ annualCtc, basicPercent, pfCapped, earnings, deductions }) => {
+  const targetAnnualGross = parseCurrency(annualCtc);
+  const targetMonthlyGross = targetAnnualGross / 12;
+  const resolvedBasicPercent = parsePercent(basicPercent);
+  const basicMonthly = targetMonthlyGross * (resolvedBasicPercent / 100);
+  const manualEarningTotal = sumFields(earnings, Object.keys(earnings).map((key) => ({ key })));
+  const remainingForSpecial = targetMonthlyGross - basicMonthly - manualEarningTotal;
+  const specialAllowance = remainingForSpecial > 0 ? remainingForSpecial : 0;
+  const monthlyGross = basicMonthly + manualEarningTotal + specialAllowance;
+  const ctcMismatchMonthly = targetMonthlyGross - monthlyGross;
+  const monthlyEmployeePf = calculateEmployeePf(basicMonthly, pfCapped);
+  const otherManualDeductions = sumFields(
     deductions,
     Object.keys(deductions).map((key) => ({ key }))
   );
-  const annualGross = monthlyGross * 12;
+  const monthlyManualDeductions = monthlyEmployeePf + otherManualDeductions;
   const annualProfessionalTax = parseCurrency(deductions.professionalTax) * 12;
-  const taxBreakdown = calculateNewRegimeIncomeTax(annualGross, annualProfessionalTax);
+  const taxBreakdown = calculateNewRegimeIncomeTax(monthlyGross * 12, annualProfessionalTax);
   const monthlyIncomeTax = taxBreakdown.monthlyTax;
   const monthlyDeductions = monthlyManualDeductions + monthlyIncomeTax;
   const monthlyInHand = Math.max(monthlyGross - monthlyDeductions, 0);
 
   return {
+    targetAnnualGross,
+    targetMonthlyGross,
+    basicPercent: resolvedBasicPercent,
+    pfCapped: Boolean(pfCapped),
+    earnings: {
+      ...earnings,
+      basic: basicMonthly,
+      specialAllowance
+    },
+    deductions: {
+      ...deductions,
+      employeePf: monthlyEmployeePf
+    },
+    manualEarningTotal,
     monthlyGross,
     monthlyManualDeductions,
     monthlyIncomeTax,
     monthlyDeductions,
     monthlyInHand,
-    annualGross,
+    annualGross: monthlyGross * 12,
     annualManualDeductions: monthlyManualDeductions * 12,
     annualDeductions: monthlyDeductions * 12,
     annualIncomeTax: taxBreakdown.totalTax,
     annualInHand: monthlyInHand * 12,
+    ctcMismatchMonthly,
+    ctcMismatchAnnual: ctcMismatchMonthly * 12,
     taxBreakdown
   };
 };

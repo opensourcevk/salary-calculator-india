@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { deductionFields, earningFields, presets } from './data/salaryComponents';
 import {
   calculateSalary,
+  EPF_MONTHLY_WAGE_CEILING,
+  EPF_RATE,
   formatCurrency,
   NEW_REGIME_REBATE_THRESHOLD,
   NEW_REGIME_STANDARD_DEDUCTION
@@ -17,16 +19,19 @@ const createPresetState = (presetKey) => {
   const preset = presets[presetKey];
 
   return {
+    annualCtc: preset.annualCtc,
+    basicPercent: preset.basicPercent,
+    pfCapped: preset.pfCapped,
     earnings: Object.fromEntries(earningFields.map((field) => [field.key, preset[field.key] ?? 0])),
     deductions: Object.fromEntries(deductionFields.map((field) => [field.key, preset[field.key] ?? 0]))
   };
 };
 
-const NumberField = ({ field, value, onChange }) => (
+const CurrencyField = ({ label, helper, value, onChange }) => (
   <div className="col-12 col-md-6">
     <label className="field-tile h-100">
-      <span className="field-title">{field.label}</span>
-      <span className="field-help">{field.helper}</span>
+      <span className="field-title">{label}</span>
+      <span className="field-help">{helper}</span>
       <div className="input-group mt-3">
         <span className="input-group-text">INR</span>
         <input
@@ -35,11 +40,20 @@ const NumberField = ({ field, value, onChange }) => (
           min="0"
           step="100"
           value={value}
-          onChange={(event) => onChange(field.key, event.target.value)}
+          onChange={onChange}
         />
       </div>
     </label>
   </div>
+);
+
+const NumberField = ({ field, value, onChange }) => (
+  <CurrencyField
+    label={field.label}
+    helper={field.helper}
+    value={value}
+    onChange={(event) => onChange(field.key, event.target.value)}
+  />
 );
 
 function App() {
@@ -61,8 +75,16 @@ function App() {
     }));
   };
 
+  const updateTopLevelValue = (key, value) => {
+    setSalaryState((current) => ({
+      ...current,
+      [key]: value
+    }));
+  };
+
   const summary = calculateSalary(salaryState);
   const { taxBreakdown } = summary;
+  const ctcOverAllocated = summary.ctcMismatchMonthly < 0;
 
   return (
     <main className="salary-app py-3 py-lg-4">
@@ -76,10 +98,10 @@ function App() {
                   In-hand salary calculator for Indian employees
                 </h1>
                 <p className="lead text-secondary mt-3">
-                  Enter monthly salary components and deductions. The calculator automatically
-                  computes income tax under India&apos;s new regime, then adds that TDS into the
-                  final in-hand salary.
+                  Start with annual CTC, pick the basic percentage, and the calculator will derive
+                  monthly basic pay, employee PF, new-regime income tax, and final in-hand salary.
                 </p>
+
                 <div className="d-flex flex-wrap gap-2 mt-4">
                   {presetOptions.map((option) => (
                     <button
@@ -96,6 +118,49 @@ function App() {
                     </button>
                   ))}
                 </div>
+
+                <div className="row g-3 mt-1">
+                  <CurrencyField
+                    label="Annual CTC"
+                    helper="Enter the full yearly salary package amount you want to model. This calculator treats it as annual gross payable salary."
+                    value={salaryState.annualCtc}
+                    onChange={(event) => updateTopLevelValue('annualCtc', event.target.value)}
+                  />
+
+                  <div className="col-12 col-md-6">
+                    <label className="field-tile h-100">
+                      <span className="field-title">Basic Salary %</span>
+                      <span className="field-help">
+                        Percentage of annual CTC allocated to monthly basic salary.
+                      </span>
+                      <div className="input-group mt-3">
+                        <input
+                          className="form-control"
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.5"
+                          value={salaryState.basicPercent}
+                          onChange={(event) => updateTopLevelValue('basicPercent', event.target.value)}
+                        />
+                        <span className="input-group-text">%</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="form-check form-switch mt-4 salary-switch">
+                  <input
+                    id="pf-cap-toggle"
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={salaryState.pfCapped}
+                    onChange={(event) => updateTopLevelValue('pfCapped', event.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="pf-cap-toggle">
+                    Apply EPF wage ceiling of {formatCurrency(EPF_MONTHLY_WAGE_CEILING)} per month
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -105,12 +170,16 @@ function App() {
                 <h2>{formatCurrency(summary.monthlyInHand)}</h2>
                 <div className="summary-stat-list">
                   <div className="summary-stat">
-                    <span>Monthly Gross</span>
-                    <strong>{formatCurrency(summary.monthlyGross)}</strong>
+                    <span>Target Monthly CTC</span>
+                    <strong>{formatCurrency(summary.targetMonthlyGross)}</strong>
                   </div>
                   <div className="summary-stat">
-                    <span>Other Deductions</span>
-                    <strong>{formatCurrency(summary.monthlyManualDeductions)}</strong>
+                    <span>Auto Basic Salary</span>
+                    <strong>{formatCurrency(summary.earnings.basic)}</strong>
+                  </div>
+                  <div className="summary-stat">
+                    <span>Auto Employee PF</span>
+                    <strong>{formatCurrency(summary.deductions.employeePf)}</strong>
                   </div>
                   <div className="summary-stat">
                     <span>Auto Monthly Income Tax</span>
@@ -158,13 +227,70 @@ function App() {
             <article className="panel-card mb-4">
               <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
                 <div>
-                  <h3 className="h4 mb-2">Monthly earnings</h3>
+                  <h3 className="h4 mb-2">Auto-derived salary components</h3>
                   <p className="text-secondary mb-0">
-                    Add the recurring salary components paid to the employee every month.
+                    Basic salary, special allowance and EPF are calculated from annual CTC and
+                    basic percentage.
                   </p>
                 </div>
                 <div className="badge-panel">
-                  Gross annual salary: <strong>{formatCurrency(summary.annualGross)}</strong>
+                  EPF rate: <strong>{EPF_RATE * 100}% of basic</strong>
+                </div>
+              </div>
+
+              {ctcOverAllocated ? (
+                <div className="alert alert-warning border-0 mb-4" role="alert">
+                  Your manual earning components already exceed the annual CTC target by{' '}
+                  <strong>{formatCurrency(Math.abs(summary.ctcMismatchAnnual))}</strong>. Reduce
+                  them or increase the CTC to restore the auto-balanced special allowance.
+                </div>
+              ) : null}
+
+              <div className="row g-3">
+                <div className="col-12 col-md-6">
+                  <div className="calc-tile h-100">
+                    <span className="calc-label">Monthly Basic Salary</span>
+                    <strong>{formatCurrency(summary.earnings.basic)}</strong>
+                    <small>{salaryState.basicPercent}% of annual CTC converted to monthly basic</small>
+                  </div>
+                </div>
+                <div className="col-12 col-md-6">
+                  <div className="calc-tile h-100">
+                    <span className="calc-label">Monthly Special Allowance</span>
+                    <strong>{formatCurrency(summary.earnings.specialAllowance)}</strong>
+                    <small>Auto-balanced against the remaining CTC after other earnings</small>
+                  </div>
+                </div>
+                <div className="col-12 col-md-6">
+                  <div className="calc-tile h-100">
+                    <span className="calc-label">Monthly Employee PF</span>
+                    <strong>{formatCurrency(summary.deductions.employeePf)}</strong>
+                    <small>
+                      Based on monthly basic {salaryState.pfCapped ? 'with' : 'without'} EPF wage cap
+                    </small>
+                  </div>
+                </div>
+                <div className="col-12 col-md-6">
+                  <div className="calc-tile h-100">
+                    <span className="calc-label">Target Annual CTC</span>
+                    <strong>{formatCurrency(summary.targetAnnualGross)}</strong>
+                    <small>Used as the top-level salary input for the calculation</small>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article className="panel-card mb-4">
+              <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
+                <div>
+                  <h3 className="h4 mb-2">Monthly earnings you can adjust</h3>
+                  <p className="text-secondary mb-0">
+                    Add recurring salary components. The remaining amount is pushed into special
+                    allowance automatically.
+                  </p>
+                </div>
+                <div className="badge-panel">
+                  Manual earnings: <strong>{formatCurrency(summary.manualEarningTotal)}</strong>
                 </div>
               </div>
               <div className="row g-3">
@@ -184,17 +310,17 @@ function App() {
                 <div>
                   <h3 className="h4 mb-2">Monthly deductions</h3>
                   <p className="text-secondary mb-0">
-                    Enter payroll deductions other than income tax. Income tax is calculated
-                    automatically below.
+                    Enter payroll deductions other than employee PF and income tax. Both are
+                    calculated automatically.
                   </p>
                 </div>
                 <div className="badge-panel">
-                  Non-tax deductions: <strong>{formatCurrency(summary.monthlyManualDeductions)}</strong>
+                  Other deductions: <strong>{formatCurrency(summary.monthlyManualDeductions - summary.deductions.employeePf)}</strong>
                 </div>
               </div>
               <div className="alert alert-info border-0 deduction-note" role="note">
-                New-regime tax is auto-calculated. Update salary and deduction inputs, and the
-                monthly TDS will refresh instantly.
+                Employee PF is auto-derived from basic salary. New-regime income tax is also
+                calculated automatically and included in in-hand salary.
               </div>
               <div className="row g-3">
                 {deductionFields.map((field) => (
@@ -273,8 +399,8 @@ function App() {
                   {formatCurrency(NEW_REGIME_REBATE_THRESHOLD)}.
                 </li>
                 <li>Includes salaried standard deduction and 4% health and education cess.</li>
-                <li>Professional tax reduces take-home, but it is not deducted from taxable income in this new-regime model.</li>
-                <li>Employee PF and employee NPS reduce take-home, but no extra tax benefit is applied to them here.</li>
+                <li>Employee PF is auto-calculated as 12% of basic salary, with the wage cap toggle available.</li>
+                <li>Annual CTC is treated as annual gross payable salary for this calculator flow.</li>
               </ul>
             </article>
           </div>
