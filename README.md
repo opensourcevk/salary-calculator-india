@@ -5,7 +5,8 @@ React application for estimating monthly and annual in-hand salary for Indian em
 ## Features
 
 - Configure salary earnings such as basic, HRA, bonus, LTA and other monthly allowances
-- Add deductions including PF, professional tax, income tax, NPS, insurance, gratuity and custom entries
+- Add deductions including PF, professional tax, NPS, insurance, gratuity and custom entries
+- Auto-calculate income tax under the India new regime for FY 2025-26 / AY 2026-27
 - Preset salary profiles for quick comparison
 - SEO-ready metadata, sitemap and robots file for search engines
 - GitHub Actions workflows for CI and GitHub Pages deployment
