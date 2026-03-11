@@ -3,6 +3,7 @@ export const NEW_REGIME_REBATE_THRESHOLD = 1200000;
 export const HEALTH_AND_EDUCATION_CESS_RATE = 0.04;
 export const EPF_RATE = 0.12;
 export const EPF_MONTHLY_WAGE_CEILING = 15000;
+export const EMPLOYER_NPS_DEDUCTION_RATE_CAP = 0.14;
 
 export const NEW_REGIME_SLABS = [
   { upto: 400000, rate: 0 },
@@ -91,10 +92,18 @@ export const calculateTaxBeforeCess = (taxableIncome) => {
   return Math.min(surchargeAppliedTax, marginalReliefCap);
 };
 
-export const calculateNewRegimeIncomeTax = (annualGross, annualProfessionalTax = 0) => {
+export const calculateNewRegimeIncomeTax = (
+  annualGross,
+  annualProfessionalTax = 0,
+  annualEmployerNpsDeduction = 0
+) => {
   const grossSalary = parseCurrency(annualGross);
   const professionalTax = parseCurrency(annualProfessionalTax);
-  const taxableIncome = Math.max(grossSalary - NEW_REGIME_STANDARD_DEDUCTION, 0);
+  const employerNpsDeduction = parseCurrency(annualEmployerNpsDeduction);
+  const taxableIncome = Math.max(
+    grossSalary - NEW_REGIME_STANDARD_DEDUCTION - employerNpsDeduction,
+    0
+  );
   const slabTax = calculateSlabTax(taxableIncome);
   const taxAfterRebate = calculateTaxAfterRebate(taxableIncome, slabTax);
   const taxBeforeCess = calculateTaxBeforeCess(taxableIncome);
@@ -106,6 +115,7 @@ export const calculateNewRegimeIncomeTax = (annualGross, annualProfessionalTax =
   return {
     annualGross: grossSalary,
     annualProfessionalTax: professionalTax,
+    annualEmployerNpsDeduction: employerNpsDeduction,
     standardDeduction: NEW_REGIME_STANDARD_DEDUCTION,
     taxableIncome,
     slabTax: roundCurrency(slabTax),
@@ -129,13 +139,25 @@ export const calculateSalary = ({ annualCtc, basicPercent, pfCapped, earnings, d
   const monthlyGross = basicMonthly + manualEarningTotal + specialAllowance;
   const ctcMismatchMonthly = targetMonthlyGross - monthlyGross;
   const monthlyEmployeePf = calculateEmployeePf(basicMonthly, pfCapped);
+  const monthlyEmployerPf = calculateEmployeePf(basicMonthly, pfCapped);
+  const monthlyEmployerNps = roundCurrency(
+    basicMonthly *
+      (Math.min(parsePercent(deductions.nps) / 100, EMPLOYER_NPS_DEDUCTION_RATE_CAP))
+  );
   const otherManualDeductions = sumFields(
     deductions,
-    Object.keys(deductions).map((key) => ({ key }))
+    Object.keys(deductions)
+      .filter((key) => key !== 'nps')
+      .map((key) => ({ key }))
   );
   const monthlyManualDeductions = monthlyEmployeePf + otherManualDeductions;
   const annualProfessionalTax = parseCurrency(deductions.professionalTax) * 12;
-  const taxBreakdown = calculateNewRegimeIncomeTax(monthlyGross * 12, annualProfessionalTax);
+  const annualEmployerNpsDeduction = monthlyEmployerNps * 12;
+  const taxBreakdown = calculateNewRegimeIncomeTax(
+    monthlyGross * 12,
+    annualProfessionalTax,
+    annualEmployerNpsDeduction
+  );
   const monthlyIncomeTax = taxBreakdown.monthlyTax;
   const monthlyDeductions = monthlyManualDeductions + monthlyIncomeTax;
   const monthlyInHand = Math.max(monthlyGross - monthlyDeductions, 0);
@@ -153,6 +175,10 @@ export const calculateSalary = ({ annualCtc, basicPercent, pfCapped, earnings, d
     deductions: {
       ...deductions,
       employeePf: monthlyEmployeePf
+    },
+    employerContributions: {
+      employerPf: monthlyEmployerPf,
+      employerNps: monthlyEmployerNps
     },
     manualEarningTotal,
     monthlyGross,

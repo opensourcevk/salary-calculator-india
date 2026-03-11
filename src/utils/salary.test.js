@@ -42,7 +42,7 @@ describe('salary calculations', () => {
       },
       deductions: {
         professionalTax: 200,
-        nps: 3000,
+        nps: 4,
         esi: 0,
         insurance: 1000,
         gratuity: 0,
@@ -54,9 +54,11 @@ describe('salary calculations', () => {
     expect(result.earnings.basic).toBe(75000);
     expect(result.earnings.specialAllowance).toBe(36000);
     expect(result.deductions.employeePf).toBe(9000);
+    expect(result.employerContributions.employerPf).toBe(9000);
+    expect(result.employerContributions.employerNps).toBe(3000);
     expect(result.monthlyGross).toBe(150000);
-    expect(result.monthlyIncomeTax).toBeCloseTo(12566.67, 2);
-    expect(result.monthlyInHand).toBeCloseTo(123733.33, 2);
-    expect(result.annualIncomeTax).toBe(150800);
+    expect(result.monthlyIncomeTax).toBeCloseTo(11942.67, 2);
+    expect(result.monthlyInHand).toBeCloseTo(127357.33, 2);
+    expect(result.annualIncomeTax).toBe(143312);
   });
 });
