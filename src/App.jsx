@@ -93,31 +93,12 @@ function App() {
           <div className="row g-4 align-items-stretch">
             <div className="col-12 col-lg-7">
               <div className="hero-copy h-100">
-                <span className="eyebrow-chip">FY 2025-26 | AY 2026-27</span>
-                <h1 className="display-4 fw-bold text-navy mt-3">
-                  In-hand salary calculator for Indian employees
-                </h1>
+
                 <p className="lead text-secondary mt-3">
                   Start with annual CTC, pick the basic percentage, and the calculator will derive
                   monthly basic pay, employee PF, new-regime income tax, and final in-hand salary.
                 </p>
 
-                <div className="d-flex flex-wrap gap-2 mt-4">
-                  {presetOptions.map((option) => (
-                    <button
-                      key={option.key}
-                      type="button"
-                      className={
-                        option.key === presetKey
-                          ? 'btn btn-primary rounded-pill px-4 py-2'
-                          : 'btn btn-outline-primary rounded-pill px-4 py-2'
-                      }
-                      onClick={() => handlePresetChange(option.key)}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
 
                 <div className="row g-3 mt-1">
                   <CurrencyField
@@ -224,62 +205,6 @@ function App() {
 
         <section className="row g-4">
           <div className="col-12 col-xl-7">
-            <article className="panel-card mb-4">
-              <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-                <div>
-                  <h3 className="h4 mb-2">Auto-derived salary components</h3>
-                  <p className="text-secondary mb-0">
-                    Basic salary, special allowance and EPF are calculated from annual CTC and
-                    basic percentage.
-                  </p>
-                </div>
-                <div className="badge-panel">
-                  EPF rate: <strong>{EPF_RATE * 100}% of basic</strong>
-                </div>
-              </div>
-
-              {ctcOverAllocated ? (
-                <div className="alert alert-warning border-0 mb-4" role="alert">
-                  Your manual earning components already exceed the annual CTC target by{' '}
-                  <strong>{formatCurrency(Math.abs(summary.ctcMismatchAnnual))}</strong>. Reduce
-                  them or increase the CTC to restore the auto-balanced special allowance.
-                </div>
-              ) : null}
-
-              <div className="row g-3">
-                <div className="col-12 col-md-6">
-                  <div className="calc-tile h-100">
-                    <span className="calc-label">Monthly Basic Salary</span>
-                    <strong>{formatCurrency(summary.earnings.basic)}</strong>
-                    <small>{salaryState.basicPercent}% of annual CTC converted to monthly basic</small>
-                  </div>
-                </div>
-                <div className="col-12 col-md-6">
-                  <div className="calc-tile h-100">
-                    <span className="calc-label">Monthly Special Allowance</span>
-                    <strong>{formatCurrency(summary.earnings.specialAllowance)}</strong>
-                    <small>Auto-balanced against the remaining CTC after other earnings</small>
-                  </div>
-                </div>
-                <div className="col-12 col-md-6">
-                  <div className="calc-tile h-100">
-                    <span className="calc-label">Monthly Employee PF</span>
-                    <strong>{formatCurrency(summary.deductions.employeePf)}</strong>
-                    <small>
-                      Based on monthly basic {salaryState.pfCapped ? 'with' : 'without'} EPF wage cap
-                    </small>
-                  </div>
-                </div>
-                <div className="col-12 col-md-6">
-                  <div className="calc-tile h-100">
-                    <span className="calc-label">Target Annual CTC</span>
-                    <strong>{formatCurrency(summary.targetAnnualGross)}</strong>
-                    <small>Used as the top-level salary input for the calculation</small>
-                  </div>
-                </div>
-              </div>
-            </article>
-
             <article className="panel-card mb-4">
               <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
                 <div>
@@ -391,18 +316,7 @@ function App() {
               </div>
             </article>
 
-            <article className="panel-card">
-              <h3 className="h4 mb-3">Assumptions used</h3>
-              <ul className="friendly-list mb-0">
-                <li>
-                  Uses India&apos;s new regime slab structure with rebate threshold of{' '}
-                  {formatCurrency(NEW_REGIME_REBATE_THRESHOLD)}.
-                </li>
-                <li>Includes salaried standard deduction and 4% health and education cess.</li>
-                <li>Employee PF is auto-calculated as 12% of basic salary, with the wage cap toggle available.</li>
-                <li>Annual CTC is treated as annual gross payable salary for this calculator flow.</li>
-              </ul>
-            </article>
+
           </div>
         </section>
       </div>
