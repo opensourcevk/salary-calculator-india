@@ -23,7 +23,8 @@ import {
   List,
   ListItem,
   ListItemText,
-  Chip
+  Chip,
+  Stack
 } from '@mui/material';
 import {
   calculateSalary,
@@ -50,63 +51,59 @@ const createPresetState = (presetKey) => {
 
 const CurrencyField = ({ label, helper, value, onChange }) => (
   <Grid item xs={12} md={6}>
-    <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
-      <CardContent>
-        <Tooltip title={helper} placement="top">
-          <Typography
-            variant="subtitle2"
-            fontWeight="bold"
-            sx={{ display: 'inline-block', cursor: 'pointer', mb: 2 }}
-            tabIndex={0}
-            aria-label={`${label} info`}
-          >
-            {label}
-          </Typography>
-        </Tooltip>
-        <TextField
-          fullWidth
-          type="number"
-          variant="outlined"
-          value={value}
-          onChange={onChange}
-          inputProps={{ min: 0, step: 100 }}
-          InputProps={{
-            startAdornment: <InputAdornment position="start">INR</InputAdornment>,
-          }}
-        />
-      </CardContent>
-    </Card>
+    <Stack spacing={1}>
+      <Tooltip title={helper} placement="top" arrow>
+        <Typography
+          variant="subtitle2"
+          fontWeight="bold"
+          sx={{ display: 'inline-block', cursor: 'pointer' }}
+          tabIndex={0}
+          aria-label={`${label} info`}
+        >
+          {label}
+        </Typography>
+      </Tooltip>
+      <TextField
+        fullWidth
+        type="number"
+        variant="outlined"
+        value={value}
+        onChange={onChange}
+        inputProps={{ min: 0, step: 100 }}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">INR</InputAdornment>,
+        }}
+      />
+    </Stack>
   </Grid>
 );
 
 const PercentField = ({ label, helper, value, onChange }) => (
   <Grid item xs={12} md={6}>
-    <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
-      <CardContent>
-        <Tooltip title={helper} placement="top">
-          <Typography
-            variant="subtitle2"
-            fontWeight="bold"
-            sx={{ display: 'inline-block', cursor: 'pointer', mb: 2 }}
-            tabIndex={0}
-            aria-label={`${label} info`}
-          >
-            {label}
-          </Typography>
-        </Tooltip>
-        <TextField
-          fullWidth
-          type="number"
-          variant="outlined"
-          value={value}
-          onChange={onChange}
-          inputProps={{ min: 0, max: 100, step: 0.5 }}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">% of basic</InputAdornment>,
-          }}
-        />
-      </CardContent>
-    </Card>
+    <Stack spacing={1}>
+      <Tooltip title={helper} placement="top" arrow>
+        <Typography
+          variant="subtitle2"
+          fontWeight="bold"
+          sx={{ display: 'inline-block', cursor: 'pointer' }}
+          tabIndex={0}
+          aria-label={`${label} info`}
+        >
+          {label}
+        </Typography>
+      </Tooltip>
+      <TextField
+        fullWidth
+        type="number"
+        variant="outlined"
+        value={value}
+        onChange={onChange}
+        inputProps={{ min: 0, max: 100, step: 0.5 }}
+        InputProps={{
+          endAdornment: <InputAdornment position="end">% of basic</InputAdornment>,
+        }}
+      />
+    </Stack>
   </Grid>
 );
 
@@ -186,11 +183,19 @@ function App() {
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
       <Container maxWidth="xl">
-        <Box component="section" mb={4}>
-          <Card elevation={0} sx={{ boxShadow: 1, p: { xs: 2, lg: 4 } }}>
-            <CardContent>
-              <Grid container spacing={4}>
-                <Grid item xs={12} lg={7}>
+        <Stack spacing={4} mb={4}>
+          <Typography variant="h4" component="h1" fontWeight="bold" color="primary.main">
+            Salary Calculator
+          </Typography>
+        </Stack>
+        <Grid container spacing={4} component="section" mb={4}>
+          <Grid item xs={12} lg={7}>
+            <Stack spacing={4}>
+              <Card elevation={0} sx={{ p: { xs: 2, lg: 4 } }}>
+                <CardContent>
+                  <Typography variant="h5" component="h2" mb={3} fontWeight="bold">
+                    Salary Configuration
+                  </Typography>
                   <Grid container spacing={3}>
                     <CurrencyField
                       label="Annual CTC"
@@ -200,36 +205,34 @@ function App() {
                     />
 
                     <Grid item xs={12} md={6}>
-                      <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
-                        <CardContent>
-                          <Tooltip title="Percentage of annual CTC allocated to monthly basic salary." placement="top">
-                            <Typography
-                              variant="subtitle2"
-                              fontWeight="bold"
-                              sx={{ display: 'inline-block', cursor: 'pointer', mb: 2 }}
-                              tabIndex={0}
-                              aria-label="Basic salary percentage info"
-                            >
-                              Basic Salary %
-                            </Typography>
-                          </Tooltip>
-                          <TextField
-                            fullWidth
-                            type="number"
-                            variant="outlined"
-                            value={salaryState.basicPercent}
-                            onChange={(event) => updateTopLevelValue('basicPercent', event.target.value)}
-                            inputProps={{ min: 0, max: 100, step: 0.5 }}
-                            InputProps={{
-                              endAdornment: <InputAdornment position="end">%</InputAdornment>,
-                            }}
-                          />
-                        </CardContent>
-                      </Card>
+                      <Stack spacing={1}>
+                        <Tooltip title="Percentage of annual CTC allocated to monthly basic salary." placement="top" arrow>
+                          <Typography
+                            variant="subtitle2"
+                            fontWeight="bold"
+                            sx={{ display: 'inline-block', cursor: 'pointer' }}
+                            tabIndex={0}
+                            aria-label="Basic salary percentage info"
+                          >
+                            Basic Salary %
+                          </Typography>
+                        </Tooltip>
+                        <TextField
+                          fullWidth
+                          type="number"
+                          variant="outlined"
+                          value={salaryState.basicPercent}
+                          onChange={(event) => updateTopLevelValue('basicPercent', event.target.value)}
+                          inputProps={{ min: 0, max: 100, step: 0.5 }}
+                          InputProps={{
+                            endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                          }}
+                        />
+                      </Stack>
                     </Grid>
                   </Grid>
 
-                  <Box mt={4}>
+                  <Box mt={3}>
                     <FormControlLabel
                       control={
                         <Switch
@@ -241,160 +244,164 @@ function App() {
                       label={`Apply EPF wage ceiling of ${formatCurrency(EPF_MONTHLY_WAGE_CEILING)} per month`}
                     />
                   </Box>
+                </CardContent>
+              </Card>
 
-                  <Card elevation={0} sx={{ mt: 4, boxShadow: 1 }}>
-                    <CardContent sx={{ p: { xs: 2, lg: 4 } }}>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexDirection: { xs: 'column', lg: 'row' },
-                          justifyContent: 'space-between',
-                          gap: 2,
-                          mb: 3,
-                        }}
-                      >
-                        <Box>
-                          <Tooltip
-                            title="Basic salary, special allowance and EPF are calculated from annual CTC and basic percentage."
-                            placement="top"
-                          >
-                            <Typography
-                              variant="h6"
-                              component="h3"
-                              sx={{ display: 'inline-block', cursor: 'pointer', m: 0 }}
-                              tabIndex={0}
-                              aria-label="Auto-derived salary components info"
-                            >
-                              Auto-derived salary components
-                            </Typography>
-                          </Tooltip>
-                        </Box>
-                        <Chip
-                          label={`EPF rate: ${EPF_RATE * 100}% of basic`}
-                          sx={{ alignSelf: 'flex-start' }}
-                        />
-                      </Box>
-
-                      {ctcOverAllocated && (
-                        <Alert severity="warning" sx={{ mb: 3 }}>
-                          Your manual earning components exceed the annual CTC target by{' '}
-                          <strong>{formatCurrency(Math.abs(summary.ctcMismatchAnnual))}</strong>.
-                        </Alert>
-                      )}
-
-                      <TableContainer component={Paper} elevation={0} variant="outlined">
-                        <Table aria-label="auto derived salary components table">
-                          <TableHead sx={{ bgcolor: 'action.hover' }}>
-                            <TableRow>
-                              <TableCell><strong>Component</strong></TableCell>
-                              <TableCell><strong>Value</strong></TableCell>
-                              <TableCell><strong>How it is derived</strong></TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            <TableRow hover>
-                              <TableCell component="th" scope="row">Monthly Basic Salary</TableCell>
-                              <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.earnings.basic)}</TableCell>
-                              <TableCell>{salaryState.basicPercent}% of annual CTC converted to monthly basic salary.</TableCell>
-                            </TableRow>
-                            <TableRow hover>
-                              <TableCell component="th" scope="row">Monthly Special Allowance</TableCell>
-                              <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.earnings.specialAllowance)}</TableCell>
-                              <TableCell>
-                                Auto-balanced against the remaining CTC after accounting for basic salary
-                                and other monthly earnings.
-                              </TableCell>
-                            </TableRow>
-                            <TableRow hover>
-                              <TableCell component="th" scope="row">Monthly Employee PF</TableCell>
-                              <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.deductions.employeePf)}</TableCell>
-                              <TableCell>
-                                {salaryState.pfCapped
-                                  ? `12% of monthly basic salary with the ${formatCurrency(EPF_MONTHLY_WAGE_CEILING)} EPF wage cap applied.`
-                                  : '12% of monthly basic salary without applying the EPF wage cap.'}
-                              </TableCell>
-                            </TableRow>
-                            <TableRow hover>
-                              <TableCell component="th" scope="row">Monthly Employer PF</TableCell>
-                              <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.employerContributions.employerPf)}</TableCell>
-                              <TableCell>
-                                {salaryState.pfCapped
-                                  ? `Employer-side EPF at 12% of monthly basic salary with the ${formatCurrency(EPF_MONTHLY_WAGE_CEILING)} EPF wage cap applied.`
-                                  : 'Employer-side EPF at 12% of monthly basic salary without applying the EPF wage cap.'}
-                              </TableCell>
-                            </TableRow>
-                            <TableRow hover>
-                              <TableCell component="th" scope="row">Target Annual CTC</TableCell>
-                              <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.targetAnnualGross)}</TableCell>
-                              <TableCell>This is the top-level annual CTC input used to derive monthly salary values.</TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={12} lg={5}>
-                  <Card
-                    elevation={0}
+              <Card elevation={0} sx={{ p: { xs: 2, lg: 4 } }}>
+                <CardContent>
+                  <Box
                     sx={{
-                      height: '100%',
-                      boxShadow: 1,
-                      bgcolor: 'primary.50',
-                      border: '1px solid',
-                      borderColor: 'primary.200',
+                      display: 'flex',
+                      flexDirection: { xs: 'column', lg: 'row' },
+                      justifyContent: 'space-between',
+                      alignItems: { lg: 'center' },
+                      gap: 2,
+                      mb: 3,
                     }}
                   >
-                    <CardContent sx={{ p: { xs: 2, lg: 4 } }}>
-                      <Typography variant="overline" color="text.secondary" display="block" mb={1}>
-                        Monthly In-Hand Salary
-                      </Typography>
-                      <Typography variant="h3" fontWeight="bold" color="text.primary">
-                        {formatCurrency(summary.monthlyInHand)}
-                      </Typography>
+                    <Box>
+                      <Tooltip
+                        title="Basic salary, special allowance and EPF are calculated from annual CTC and basic percentage."
+                        placement="top"
+                      >
+                        <Typography
+                          variant="h5"
+                          component="h3"
+                          fontWeight="bold"
+                          sx={{ display: 'inline-block', cursor: 'pointer', m: 0 }}
+                          tabIndex={0}
+                          aria-label="Auto-derived salary components info"
+                        >
+                          Auto-derived components
+                        </Typography>
+                      </Tooltip>
+                    </Box>
+                    <Chip
+                      label={`EPF rate: ${EPF_RATE * 100}% of basic`}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  </Box>
 
-                      <List disablePadding sx={{ mt: 4 }}>
-                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
-                          <ListItemText primary="Target Monthly CTC" />
-                          <Typography fontWeight="bold">{formatCurrency(summary.targetMonthlyGross)}</Typography>
-                        </ListItem>
-                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
-                          <ListItemText primary="Auto Basic Salary" />
-                          <Typography fontWeight="bold">{formatCurrency(summary.earnings.basic)}</Typography>
-                        </ListItem>
-                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
-                          <ListItemText primary="Employer PF Contribution" />
-                          <Typography fontWeight="bold">{formatCurrency(summary.employerContributions.employerPf)}</Typography>
-                        </ListItem>
-                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
-                          <ListItemText primary="Employer NPS Contribution" />
-                          <Typography fontWeight="bold">{formatCurrency(summary.employerContributions.employerNps)}</Typography>
-                        </ListItem>
-                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
-                          <ListItemText primary="Professional Tax" />
-                          <Typography fontWeight="bold">{formatCurrency(summary.deductions.professionalTax)}</Typography>
-                        </ListItem>
-                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
-                          <ListItemText primary="Auto Employee PF" />
-                          <Typography fontWeight="bold">{formatCurrency(summary.deductions.employeePf)}</Typography>
-                        </ListItem>
-                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
-                          <ListItemText primary="Auto Monthly Income Tax" />
-                          <Typography fontWeight="bold">{formatCurrency(summary.monthlyIncomeTax)}</Typography>
-                        </ListItem>
-                        <ListItem disableGutters sx={{ py: 1 }}>
-                          <ListItemText primary="Annual Take-Home" />
-                          <Typography fontWeight="bold">{formatCurrency(summary.annualInHand)}</Typography>
-                        </ListItem>
-                      </List>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Box>
+                  {ctcOverAllocated && (
+                    <Alert severity="warning" sx={{ mb: 3 }}>
+                      Your manual earning components exceed the annual CTC target by{' '}
+                      <strong>{formatCurrency(Math.abs(summary.ctcMismatchAnnual))}</strong>.
+                    </Alert>
+                  )}
+
+                  <TableContainer component={Paper} elevation={0} variant="outlined" sx={{ borderRadius: 2 }}>
+                    <Table aria-label="auto derived salary components table">
+                      <TableHead sx={{ bgcolor: 'secondary.light' }}>
+                        <TableRow>
+                          <TableCell><strong>Component</strong></TableCell>
+                          <TableCell><strong>Value</strong></TableCell>
+                          <TableCell><strong>How it is derived</strong></TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow hover>
+                          <TableCell component="th" scope="row">Monthly Basic Salary</TableCell>
+                          <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.earnings.basic)}</TableCell>
+                          <TableCell>{salaryState.basicPercent}% of annual CTC converted to monthly basic salary.</TableCell>
+                        </TableRow>
+                        <TableRow hover>
+                          <TableCell component="th" scope="row">Monthly Special Allowance</TableCell>
+                          <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.earnings.specialAllowance)}</TableCell>
+                          <TableCell>
+                            Auto-balanced against the remaining CTC after accounting for basic salary
+                            and other monthly earnings.
+                          </TableCell>
+                        </TableRow>
+                        <TableRow hover>
+                          <TableCell component="th" scope="row">Monthly Employee PF</TableCell>
+                          <TableCell sx={{ fontWeight: 'bold', color: 'error.main' }}>{formatCurrency(summary.deductions.employeePf)}</TableCell>
+                          <TableCell>
+                            {salaryState.pfCapped
+                              ? `12% of monthly basic salary with the ${formatCurrency(EPF_MONTHLY_WAGE_CEILING)} EPF wage cap applied.`
+                              : '12% of monthly basic salary without applying the EPF wage cap.'}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow hover>
+                          <TableCell component="th" scope="row">Monthly Employer PF</TableCell>
+                          <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.employerContributions.employerPf)}</TableCell>
+                          <TableCell>
+                            {salaryState.pfCapped
+                              ? `Employer-side EPF at 12% of monthly basic salary with the ${formatCurrency(EPF_MONTHLY_WAGE_CEILING)} EPF wage cap applied.`
+                              : 'Employer-side EPF at 12% of monthly basic salary without applying the EPF wage cap.'}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow hover>
+                          <TableCell component="th" scope="row">Target Annual CTC</TableCell>
+                          <TableCell sx={{ fontWeight: 'bold', color: 'primary.main' }}>{formatCurrency(summary.targetAnnualGross)}</TableCell>
+                          <TableCell>This is the top-level annual CTC input used to derive monthly salary values.</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </CardContent>
+              </Card>
+            </Stack>
+          </Grid>
+
+          <Grid item xs={12} lg={5}>
+            <Card
+              elevation={0}
+              sx={{
+                height: '100%',
+                bgcolor: 'primary.light',
+                color: 'primary.dark',
+                p: { xs: 2, lg: 4 }
+              }}
+            >
+              <CardContent>
+                <Typography variant="overline" display="block" mb={1} sx={{ opacity: 0.8 }}>
+                  Monthly In-Hand Salary
+                </Typography>
+                <Typography variant="h2" fontWeight="bold" sx={{ color: 'primary.dark' }}>
+                  {formatCurrency(summary.monthlyInHand)}
+                </Typography>
+
+                <Paper elevation={0} sx={{ mt: 4, bgcolor: 'background.paper', borderRadius: 3 }}>
+                  <List disablePadding>
+                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+                      <ListItemText primary="Target Monthly CTC" />
+                      <Typography fontWeight="bold">{formatCurrency(summary.targetMonthlyGross)}</Typography>
+                    </ListItem>
+                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+                      <ListItemText primary="Auto Basic Salary" />
+                      <Typography fontWeight="bold">{formatCurrency(summary.earnings.basic)}</Typography>
+                    </ListItem>
+                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+                      <ListItemText primary="Employer PF Contribution" />
+                      <Typography fontWeight="bold">{formatCurrency(summary.employerContributions.employerPf)}</Typography>
+                    </ListItem>
+                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+                      <ListItemText primary="Employer NPS Contribution" />
+                      <Typography fontWeight="bold">{formatCurrency(summary.employerContributions.employerNps)}</Typography>
+                    </ListItem>
+                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
+                      <ListItemText primary="Professional Tax" />
+                      <Typography fontWeight="bold">{formatCurrency(summary.deductions.professionalTax)}</Typography>
+                    </ListItem>
+                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
+                      <ListItemText primary="Auto Employee PF" />
+                      <Typography fontWeight="bold">{formatCurrency(summary.deductions.employeePf)}</Typography>
+                    </ListItem>
+                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
+                      <ListItemText primary="Auto Monthly Income Tax" />
+                      <Typography fontWeight="bold">{formatCurrency(summary.monthlyIncomeTax)}</Typography>
+                    </ListItem>
+                    <ListItem sx={{ py: 2, bgcolor: 'primary.main', color: 'primary.contrastText', borderRadius: '0 0 12px 12px' }}>
+                      <ListItemText primary={<Typography fontWeight="bold">Annual Take-Home</Typography>} />
+                      <Typography variant="h6" fontWeight="bold">{formatCurrency(summary.annualInHand)}</Typography>
+                    </ListItem>
+                  </List>
+                </Paper>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
         <Grid container spacing={3} component="section" mb={4}>
           <Grid item xs={6} lg={3}>
