@@ -189,7 +189,7 @@ function App() {
           </Typography>
         </Stack>
         <Grid container spacing={4} component="section" mb={4}>
-          <Grid item xs={12} lg={7}>
+          <Grid item xs={12} lg={6}>
             <Stack spacing={4}>
               <Card elevation={0} sx={{ p: { xs: 2, lg: 4 } }}>
                 <CardContent>
@@ -342,120 +342,187 @@ function App() {
                 </CardContent>
               </Card>
             </Stack>
+
+            <Grid container spacing={3} component="section" mt={2} mb={4}>
+              <Grid item xs={6} lg={3}>
+                <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+                  <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
+                    <Typography variant="overline" color="text.secondary" display="block" sx={{ lineHeight: 1.2, mb: 0.5 }}>
+                      Monthly Gross
+                    </Typography>
+                    <Typography variant="h6" fontWeight="bold">
+                      {formatCurrency(summary.monthlyGross)}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={6} lg={3}>
+                <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+                  <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
+                    <Typography variant="overline" color="text.secondary" display="block" sx={{ lineHeight: 1.2, mb: 0.5 }}>
+                      Monthly Deductions
+                    </Typography>
+                    <Typography variant="h6" fontWeight="bold">
+                      {formatCurrency(summary.monthlyDeductions)}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={6} lg={3}>
+                <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+                  <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
+                    <Typography variant="overline" color="text.secondary" display="block" sx={{ lineHeight: 1.2, mb: 0.5 }}>
+                      Taxable Income
+                    </Typography>
+                    <Typography variant="h6" fontWeight="bold">
+                      {formatCurrency(taxBreakdown.taxableIncome)}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={6} lg={3}>
+                <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+                  <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
+                    <Typography variant="overline" color="text.secondary" display="block" sx={{ lineHeight: 1.2, mb: 0.5 }}>
+                      Annual Income Tax
+                    </Typography>
+                    <Typography variant="h6" fontWeight="bold">
+                      {formatCurrency(summary.annualIncomeTax)}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
           </Grid>
 
-          <Grid item xs={12} lg={5}>
+          <Grid item xs={12} md={6} lg={2.5}>
             <Card
               elevation={0}
               sx={{
                 height: '100%',
                 bgcolor: 'primary.light',
                 color: 'primary.dark',
-                p: { xs: 2, lg: 4 }
+                p: { xs: 2, lg: 3 },
+                borderRadius: 4
               }}
             >
-              <CardContent>
+              <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
                 <Typography variant="overline" display="block" mb={1} sx={{ opacity: 0.8 }}>
                   Monthly In-Hand Salary
                 </Typography>
-                <Typography variant="h2" fontWeight="bold" sx={{ color: 'primary.dark' }}>
+                <Typography variant="h3" fontWeight="bold" sx={{ color: 'primary.dark' }}>
                   {formatCurrency(summary.monthlyInHand)}
                 </Typography>
 
-                <Paper elevation={0} sx={{ mt: 4, bgcolor: 'background.paper', borderRadius: 3 }}>
-                  <List disablePadding>
-                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-                      <ListItemText primary="Target Monthly CTC" />
-                      <Typography fontWeight="bold">{formatCurrency(summary.targetMonthlyGross)}</Typography>
-                    </ListItem>
-                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-                      <ListItemText primary="Auto Basic Salary" />
-                      <Typography fontWeight="bold">{formatCurrency(summary.earnings.basic)}</Typography>
-                    </ListItem>
-                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-                      <ListItemText primary="Employer PF Contribution" />
-                      <Typography fontWeight="bold">{formatCurrency(summary.employerContributions.employerPf)}</Typography>
-                    </ListItem>
-                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-                      <ListItemText primary="Employer NPS Contribution" />
-                      <Typography fontWeight="bold">{formatCurrency(summary.employerContributions.employerNps)}</Typography>
-                    </ListItem>
-                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
-                      <ListItemText primary="Professional Tax" />
-                      <Typography fontWeight="bold">{formatCurrency(summary.deductions.professionalTax)}</Typography>
-                    </ListItem>
-                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
-                      <ListItemText primary="Auto Employee PF" />
-                      <Typography fontWeight="bold">{formatCurrency(summary.deductions.employeePf)}</Typography>
-                    </ListItem>
-                    <ListItem sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
-                      <ListItemText primary="Auto Monthly Income Tax" />
-                      <Typography fontWeight="bold">{formatCurrency(summary.monthlyIncomeTax)}</Typography>
-                    </ListItem>
-                    <ListItem sx={{ py: 2, bgcolor: 'primary.main', color: 'primary.contrastText', borderRadius: '0 0 12px 12px' }}>
-                      <ListItemText primary={<Typography fontWeight="bold">Annual Take-Home</Typography>} />
-                      <Typography variant="h6" fontWeight="bold">{formatCurrency(summary.annualInHand)}</Typography>
-                    </ListItem>
-                  </List>
-                </Paper>
+                <Stack spacing={1.5} sx={{ mt: 4 }}>
+                  <ListItem sx={{ py: 1.5, px: 2, bgcolor: 'background.paper', borderRadius: 6 }}>
+                    <ListItemText primary="Target Monthly CTC" primaryTypographyProps={{ variant: 'body2' }} />
+                    <Typography variant="body2" fontWeight="bold">{formatCurrency(summary.targetMonthlyGross)}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ py: 1.5, px: 2, bgcolor: 'background.paper', borderRadius: 6 }}>
+                    <ListItemText primary="Auto Basic Salary" primaryTypographyProps={{ variant: 'body2' }} />
+                    <Typography variant="body2" fontWeight="bold">{formatCurrency(summary.earnings.basic)}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ py: 1.5, px: 2, bgcolor: 'background.paper', borderRadius: 6 }}>
+                    <ListItemText primary="Employer PF Contribution" primaryTypographyProps={{ variant: 'body2' }} />
+                    <Typography variant="body2" fontWeight="bold">{formatCurrency(summary.employerContributions.employerPf)}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ py: 1.5, px: 2, bgcolor: 'background.paper', borderRadius: 6 }}>
+                    <ListItemText primary="Employer NPS Contribution" primaryTypographyProps={{ variant: 'body2' }} />
+                    <Typography variant="body2" fontWeight="bold">{formatCurrency(summary.employerContributions.employerNps)}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ py: 1.5, px: 2, bgcolor: 'background.paper', borderRadius: 6, color: 'error.main' }}>
+                    <ListItemText primary="Professional Tax" primaryTypographyProps={{ variant: 'body2' }} />
+                    <Typography variant="body2" fontWeight="bold">{formatCurrency(summary.deductions.professionalTax)}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ py: 1.5, px: 2, bgcolor: 'background.paper', borderRadius: 6, color: 'error.main' }}>
+                    <ListItemText primary="Auto Employee PF" primaryTypographyProps={{ variant: 'body2' }} />
+                    <Typography variant="body2" fontWeight="bold">{formatCurrency(summary.deductions.employeePf)}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ py: 1.5, px: 2, bgcolor: 'background.paper', borderRadius: 6, color: 'error.main' }}>
+                    <ListItemText primary="Auto Monthly Income Tax" primaryTypographyProps={{ variant: 'body2' }} />
+                    <Typography variant="body2" fontWeight="bold">{formatCurrency(summary.monthlyIncomeTax)}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ py: 2, px: 2, bgcolor: 'primary.main', color: 'primary.contrastText', borderRadius: 2 }}>
+                    <ListItemText primary={<Typography variant="body2" fontWeight="bold">Annual Take-Home</Typography>} />
+                    <Typography variant="body1" fontWeight="bold">{formatCurrency(summary.annualInHand)}</Typography>
+                  </ListItem>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={6} lg={3.5}>
+            <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+              <CardContent sx={{ p: { xs: 2, lg: 3 } }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    gap: 3,
+                    mb: 3,
+                  }}
+                >
+                  <Box>
+                    <Tooltip
+                      title="New regime for salaried employees with standard deduction and 4% cess."
+                      placement="top"
+                    >
+                      <Typography
+                        variant="h6"
+                        component="h3"
+                        sx={{ display: 'inline-block', cursor: 'pointer', m: 0 }}
+                        tabIndex={0}
+                        aria-label="Auto income tax breakdown info"
+                      >
+                        Auto income tax breakdown
+                      </Typography>
+                    </Tooltip>
+                  </Box>
+                  <Chip label="Auto" size="small" />
+                </Box>
+
+                <List disablePadding sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, overflow: 'hidden' }}>
+                  <BreakdownItem label="Annual Gross Salary" value={formatCurrency(summary.annualGross)} />
+                  <BreakdownItem
+                    label="Standard Deduction"
+                    value={formatCurrency(NEW_REGIME_STANDARD_DEDUCTION)}
+                  />
+                  <BreakdownItem
+                    label="Annual Professional Tax (cash deduction only)"
+                    value={formatCurrency(taxBreakdown.annualProfessionalTax)}
+                  />
+                  <BreakdownItem
+                    label="Annual Employer NPS Deduction"
+                    value={formatCurrency(taxBreakdown.annualEmployerNpsDeduction)}
+                  />
+                  <BreakdownItem label="Taxable Income" value={formatCurrency(taxBreakdown.taxableIncome)} />
+                  <BreakdownItem label="Slab Tax" value={formatCurrency(taxBreakdown.slabTax)} />
+                  <BreakdownItem label="Rebate / Relief" value={formatCurrency(taxBreakdown.rebate)} />
+                  <BreakdownItem label="Surcharge" value={formatCurrency(taxBreakdown.surcharge)} />
+                  <BreakdownItem
+                    label="Health & Education Cess"
+                    value={formatCurrency(taxBreakdown.cess)}
+                  />
+                  <BreakdownItem
+                    label="Annual Income Tax"
+                    value={formatCurrency(summary.annualIncomeTax)}
+                    emphasize
+                  />
+                  <BreakdownItem
+                    label="Monthly TDS Impact"
+                    value={formatCurrency(summary.monthlyIncomeTax)}
+                    emphasize
+                  />
+                </List>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
 
-        <Grid container spacing={3} component="section" mb={4}>
-          <Grid item xs={6} lg={3}>
-            <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
-              <CardContent>
-                <Typography variant="overline" color="text.secondary" display="block">
-                  Monthly Gross
-                </Typography>
-                <Typography variant="h5" fontWeight="bold" mt={1}>
-                  {formatCurrency(summary.monthlyGross)}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={6} lg={3}>
-            <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
-              <CardContent>
-                <Typography variant="overline" color="text.secondary" display="block">
-                  Monthly Deductions
-                </Typography>
-                <Typography variant="h5" fontWeight="bold" mt={1}>
-                  {formatCurrency(summary.monthlyDeductions)}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={6} lg={3}>
-            <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
-              <CardContent>
-                <Typography variant="overline" color="text.secondary" display="block">
-                  Taxable Income
-                </Typography>
-                <Typography variant="h5" fontWeight="bold" mt={1}>
-                  {formatCurrency(taxBreakdown.taxableIncome)}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={6} lg={3}>
-            <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
-              <CardContent>
-                <Typography variant="overline" color="text.secondary" display="block">
-                  Annual Income Tax
-                </Typography>
-                <Typography variant="h5" fontWeight="bold" mt={1}>
-                  {formatCurrency(summary.annualIncomeTax)}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={4} component="section">
-          <Grid item xs={12} xl={7}>
+        <Grid container spacing={4} component="section" mb={4}>
+          <Grid item xs={12}>
             <Card elevation={0} sx={{ mb: 4, boxShadow: 1 }}>
               <CardContent sx={{ p: { xs: 2, lg: 4 } }}>
                 <Box
@@ -536,74 +603,6 @@ function App() {
                     />
                   ))}
                 </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} xl={5}>
-            <Card elevation={0} sx={{ mb: 4, boxShadow: 1 }}>
-              <CardContent sx={{ p: { xs: 2, lg: 4 } }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    gap: 3,
-                    mb: 3,
-                  }}
-                >
-                  <Box>
-                    <Tooltip
-                      title="New regime for salaried employees with standard deduction and 4% cess."
-                      placement="top"
-                    >
-                      <Typography
-                        variant="h6"
-                        component="h3"
-                        sx={{ display: 'inline-block', cursor: 'pointer', m: 0 }}
-                        tabIndex={0}
-                        aria-label="Auto income tax breakdown info"
-                      >
-                        Auto income tax breakdown
-                      </Typography>
-                    </Tooltip>
-                  </Box>
-                  <Chip label="Auto" />
-                </Box>
-
-                <List disablePadding sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, overflow: 'hidden' }}>
-                  <BreakdownItem label="Annual Gross Salary" value={formatCurrency(summary.annualGross)} />
-                  <BreakdownItem
-                    label="Standard Deduction"
-                    value={formatCurrency(NEW_REGIME_STANDARD_DEDUCTION)}
-                  />
-                  <BreakdownItem
-                    label="Annual Professional Tax (cash deduction only)"
-                    value={formatCurrency(taxBreakdown.annualProfessionalTax)}
-                  />
-                  <BreakdownItem
-                    label="Annual Employer NPS Deduction"
-                    value={formatCurrency(taxBreakdown.annualEmployerNpsDeduction)}
-                  />
-                  <BreakdownItem label="Taxable Income" value={formatCurrency(taxBreakdown.taxableIncome)} />
-                  <BreakdownItem label="Slab Tax" value={formatCurrency(taxBreakdown.slabTax)} />
-                  <BreakdownItem label="Rebate / Relief" value={formatCurrency(taxBreakdown.rebate)} />
-                  <BreakdownItem label="Surcharge" value={formatCurrency(taxBreakdown.surcharge)} />
-                  <BreakdownItem
-                    label="Health & Education Cess"
-                    value={formatCurrency(taxBreakdown.cess)}
-                  />
-                  <BreakdownItem
-                    label="Annual Income Tax"
-                    value={formatCurrency(summary.annualIncomeTax)}
-                    emphasize
-                  />
-                  <BreakdownItem
-                    label="Monthly TDS Impact"
-                    value={formatCurrency(summary.monthlyIncomeTax)}
-                    emphasize
-                  />
-                </List>
               </CardContent>
             </Card>
           </Grid>
