@@ -1,6 +1,30 @@
-import { useEffect, useState } from 'react';
-import { Tooltip } from 'bootstrap';
+import { useState } from 'react';
 import { deductionFields, earningFields, presets } from './data/salaryComponents';
+import {
+  Box,
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  InputAdornment,
+  Tooltip,
+  Switch,
+  FormControlLabel,
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Chip
+} from '@mui/material';
 import {
   calculateSalary,
   EMPLOYER_NPS_DEDUCTION_RATE_CAP,
@@ -25,66 +49,65 @@ const createPresetState = (presetKey) => {
 };
 
 const CurrencyField = ({ label, helper, value, onChange }) => (
-  <div className="col-12 col-md-6">
-    <label className="card h-100 border-0 shadow-sm">
-      <div className="card-body">
-        <span
-          className="fw-semibold d-inline-block"
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={helper}
-          tabIndex="0"
-          role="button"
-          aria-label={`${label} info`}
-        >
-          {label}
-        </span>
-        <div className="input-group mt-3">
-          <span className="input-group-text">INR</span>
-          <input
-            className="form-control"
-            type="number"
-            min="0"
-            step="100"
-            value={value}
-            onChange={onChange}
-          />
-        </div>
-      </div>
-    </label>
-  </div>
+  <Grid item xs={12} md={6}>
+    <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+      <CardContent>
+        <Tooltip title={helper} placement="top">
+          <Typography
+            variant="subtitle2"
+            fontWeight="bold"
+            sx={{ display: 'inline-block', cursor: 'pointer', mb: 2 }}
+            tabIndex={0}
+            aria-label={`${label} info`}
+          >
+            {label}
+          </Typography>
+        </Tooltip>
+        <TextField
+          fullWidth
+          type="number"
+          variant="outlined"
+          value={value}
+          onChange={onChange}
+          inputProps={{ min: 0, step: 100 }}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">INR</InputAdornment>,
+          }}
+        />
+      </CardContent>
+    </Card>
+  </Grid>
 );
 
 const PercentField = ({ label, helper, value, onChange }) => (
-  <div className="col-12 col-md-6">
-    <label className="card h-100 border-0 shadow-sm">
-      <div className="card-body">
-        <span
-          className="fw-semibold d-inline-block"
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title={helper}
-          tabIndex="0"
-          role="button"
-          aria-label={`${label} info`}
-        >
-          {label}
-        </span>
-        <div className="input-group mt-3">
-          <input
-            className="form-control"
-            type="number"
-            min="0"
-            max="100"
-            step="0.5"
-            value={value}
-            onChange={onChange}
-          />
-          <span className="input-group-text">% of basic</span>
-        </div>
-      </div>
-    </label>
-  </div>
+  <Grid item xs={12} md={6}>
+    <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+      <CardContent>
+        <Tooltip title={helper} placement="top">
+          <Typography
+            variant="subtitle2"
+            fontWeight="bold"
+            sx={{ display: 'inline-block', cursor: 'pointer', mb: 2 }}
+            tabIndex={0}
+            aria-label={`${label} info`}
+          >
+            {label}
+          </Typography>
+        </Tooltip>
+        <TextField
+          fullWidth
+          type="number"
+          variant="outlined"
+          value={value}
+          onChange={onChange}
+          inputProps={{ min: 0, max: 100, step: 0.5 }}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">% of basic</InputAdornment>,
+          }}
+        />
+      </CardContent>
+    </Card>
+  </Grid>
 );
 
 const NumberField = ({ field, value, onChange }) => {
@@ -110,29 +133,33 @@ const NumberField = ({ field, value, onChange }) => {
 };
 
 const BreakdownItem = ({ label, value, emphasize = false }) => (
-  <li
-    className={
-      emphasize
-        ? 'list-group-item d-flex flex-column flex-sm-row justify-content-between gap-1 active'
-        : 'list-group-item d-flex flex-column flex-sm-row justify-content-between gap-1'
-    }
+  <ListItem
+    sx={{
+      display: 'flex',
+      flexDirection: { xs: 'column', sm: 'row' },
+      justifyContent: 'space-between',
+      gap: 1,
+      px: 2,
+      py: 1.5,
+      ...(emphasize && {
+        bgcolor: 'primary.main',
+        color: 'primary.contrastText',
+        borderRadius: 1,
+        mb: 0.5,
+      }),
+      borderBottom: emphasize ? 'none' : '1px solid',
+      borderColor: 'divider',
+    }}
   >
-    <span>{label}</span>
-    <strong>{value}</strong>
-  </li>
+    <Typography variant="body1">{label}</Typography>
+    <Typography variant="body1" fontWeight="bold">
+      {value}
+    </Typography>
+  </ListItem>
 );
 
 function App() {
   const [salaryState, setSalaryState] = useState(() => createPresetState(DEFAULT_PRESET_KEY));
-
-  useEffect(() => {
-    const tooltipElements = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    const tooltips = tooltipElements.map((element) => new Tooltip(element));
-
-    return () => {
-      tooltips.forEach((tooltip) => tooltip.dispose());
-    };
-  }, []);
 
   const updateGroupValue = (group) => (key, value) => {
     setSalaryState((current) => ({
@@ -157,249 +184,297 @@ function App() {
   const otherDeductions = summary.monthlyManualDeductions - summary.deductions.employeePf;
 
   return (
-    <main className="bg-body-tertiary min-vh-100 py-4">
-      <div className="container-xl">
-        <section className="card border-0 shadow-sm mb-4">
-          <div className="card-body p-4 p-lg-5">
-            <div className="row g-4">
-              <div className="col-12 col-lg-7">
-                <div className="row g-3">
-                  <CurrencyField
-                    label="Annual CTC"
-                    helper="Enter the yearly salary package to model. This calculator treats it as annual gross payable salary."
-                    value={salaryState.annualCtc}
-                    onChange={(event) => updateTopLevelValue('annualCtc', event.target.value)}
-                  />
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
+      <Container maxWidth="xl">
+        <Box component="section" mb={4}>
+          <Card elevation={0} sx={{ boxShadow: 1, p: { xs: 2, lg: 4 } }}>
+            <CardContent>
+              <Grid container spacing={4}>
+                <Grid item xs={12} lg={7}>
+                  <Grid container spacing={3}>
+                    <CurrencyField
+                      label="Annual CTC"
+                      helper="Enter the yearly salary package to model. This calculator treats it as annual gross payable salary."
+                      value={salaryState.annualCtc}
+                      onChange={(event) => updateTopLevelValue('annualCtc', event.target.value)}
+                    />
 
-                  <div className="col-12 col-md-6">
-                    <label className="card h-100 border-0 shadow-sm">
-                      <div className="card-body">
-                        <span
-                          className="fw-semibold d-inline-block"
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="top"
-                          title="Percentage of annual CTC allocated to monthly basic salary."
-                          tabIndex="0"
-                          role="button"
-                          aria-label="Basic salary percentage info"
-                        >
-                          Basic Salary %
-                        </span>
-                        <div className="input-group mt-3">
-                          <input
-                            className="form-control"
+                    <Grid item xs={12} md={6}>
+                      <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+                        <CardContent>
+                          <Tooltip title="Percentage of annual CTC allocated to monthly basic salary." placement="top">
+                            <Typography
+                              variant="subtitle2"
+                              fontWeight="bold"
+                              sx={{ display: 'inline-block', cursor: 'pointer', mb: 2 }}
+                              tabIndex={0}
+                              aria-label="Basic salary percentage info"
+                            >
+                              Basic Salary %
+                            </Typography>
+                          </Tooltip>
+                          <TextField
+                            fullWidth
                             type="number"
-                            min="0"
-                            max="100"
-                            step="0.5"
+                            variant="outlined"
                             value={salaryState.basicPercent}
                             onChange={(event) => updateTopLevelValue('basicPercent', event.target.value)}
+                            inputProps={{ min: 0, max: 100, step: 0.5 }}
+                            InputProps={{
+                              endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                            }}
                           />
-                          <span className="input-group-text">%</span>
-                        </div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  </Grid>
 
-                <div className="form-check form-switch mt-4">
-                  <input
-                    id="pf-cap-toggle"
-                    className="form-check-input"
-                    type="checkbox"
-                    checked={salaryState.pfCapped}
-                    onChange={(event) => updateTopLevelValue('pfCapped', event.target.checked)}
-                  />
-                  <label className="form-check-label" htmlFor="pf-cap-toggle">
-                    Apply EPF wage ceiling of {formatCurrency(EPF_MONTHLY_WAGE_CEILING)} per month
-                  </label>
-                </div>
+                  <Box mt={4}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={salaryState.pfCapped}
+                          onChange={(event) => updateTopLevelValue('pfCapped', event.target.checked)}
+                          color="primary"
+                        />
+                      }
+                      label={`Apply EPF wage ceiling of ${formatCurrency(EPF_MONTHLY_WAGE_CEILING)} per month`}
+                    />
+                  </Box>
 
-                <article className="card border-0 shadow-sm mt-4">
-                  <div className="card-body p-4">
-                    <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-                      <div>
-                        <h3
-                          className="h4 mb-0 d-inline-block"
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="top"
-                          title="Basic salary, special allowance and EPF are calculated from annual CTC and basic percentage."
-                          tabIndex="0"
-                          role="button"
-                          aria-label="Auto-derived salary components info"
-                        >
-                          Auto-derived salary components
-                        </h3>
-                      </div>
-                      <span className="badge text-bg-light align-self-start">
-                        EPF rate: {EPF_RATE * 100}% of basic
-                      </span>
-                    </div>
+                  <Card elevation={0} sx={{ mt: 4, boxShadow: 1 }}>
+                    <CardContent sx={{ p: { xs: 2, lg: 4 } }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: { xs: 'column', lg: 'row' },
+                          justifyContent: 'space-between',
+                          gap: 2,
+                          mb: 3,
+                        }}
+                      >
+                        <Box>
+                          <Tooltip
+                            title="Basic salary, special allowance and EPF are calculated from annual CTC and basic percentage."
+                            placement="top"
+                          >
+                            <Typography
+                              variant="h6"
+                              component="h3"
+                              sx={{ display: 'inline-block', cursor: 'pointer', m: 0 }}
+                              tabIndex={0}
+                              aria-label="Auto-derived salary components info"
+                            >
+                              Auto-derived salary components
+                            </Typography>
+                          </Tooltip>
+                        </Box>
+                        <Chip
+                          label={`EPF rate: ${EPF_RATE * 100}% of basic`}
+                          sx={{ alignSelf: 'flex-start' }}
+                        />
+                      </Box>
 
-                    {ctcOverAllocated ? (
-                      <div className="alert alert-warning" role="alert">
-                        Your manual earning components exceed the annual CTC target by{' '}
-                        <strong>{formatCurrency(Math.abs(summary.ctcMismatchAnnual))}</strong>.
-                      </div>
-                    ) : null}
+                      {ctcOverAllocated && (
+                        <Alert severity="warning" sx={{ mb: 3 }}>
+                          Your manual earning components exceed the annual CTC target by{' '}
+                          <strong>{formatCurrency(Math.abs(summary.ctcMismatchAnnual))}</strong>.
+                        </Alert>
+                      )}
 
-                    <div className="table-responsive">
-                      <table className="table table-striped table-hover align-middle mb-0">
-                        <thead className="table-light">
-                          <tr>
-                            <th scope="col">Component</th>
-                            <th scope="col">Value</th>
-                            <th scope="col">How it is derived</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row">Monthly Basic Salary</th>
-                            <td className="fw-semibold">{formatCurrency(summary.earnings.basic)}</td>
-                            <td>{salaryState.basicPercent}% of annual CTC converted to monthly basic salary.</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">Monthly Special Allowance</th>
-                            <td className="fw-semibold">
-                              {formatCurrency(summary.earnings.specialAllowance)}
-                            </td>
-                            <td>
-                              Auto-balanced against the remaining CTC after accounting for basic salary
-                              and other monthly earnings.
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">Monthly Employee PF</th>
-                            <td className="fw-semibold">
-                              {formatCurrency(summary.deductions.employeePf)}
-                            </td>
-                            <td>
-                              {salaryState.pfCapped
-                                ? `12% of monthly basic salary with the ${formatCurrency(EPF_MONTHLY_WAGE_CEILING)} EPF wage cap applied.`
-                                : '12% of monthly basic salary without applying the EPF wage cap.'}
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">Monthly Employer PF</th>
-                            <td className="fw-semibold">
-                              {formatCurrency(summary.employerContributions.employerPf)}
-                            </td>
-                            <td>
-                              {salaryState.pfCapped
-                                ? `Employer-side EPF at 12% of monthly basic salary with the ${formatCurrency(EPF_MONTHLY_WAGE_CEILING)} EPF wage cap applied.`
-                                : 'Employer-side EPF at 12% of monthly basic salary without applying the EPF wage cap.'}
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">Target Annual CTC</th>
-                            <td className="fw-semibold">{formatCurrency(summary.targetAnnualGross)}</td>
-                            <td>This is the top-level annual CTC input used to derive monthly salary values.</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </article>
-              </div>
+                      <TableContainer component={Paper} elevation={0} variant="outlined">
+                        <Table aria-label="auto derived salary components table">
+                          <TableHead sx={{ bgcolor: 'action.hover' }}>
+                            <TableRow>
+                              <TableCell><strong>Component</strong></TableCell>
+                              <TableCell><strong>Value</strong></TableCell>
+                              <TableCell><strong>How it is derived</strong></TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            <TableRow hover>
+                              <TableCell component="th" scope="row">Monthly Basic Salary</TableCell>
+                              <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.earnings.basic)}</TableCell>
+                              <TableCell>{salaryState.basicPercent}% of annual CTC converted to monthly basic salary.</TableCell>
+                            </TableRow>
+                            <TableRow hover>
+                              <TableCell component="th" scope="row">Monthly Special Allowance</TableCell>
+                              <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.earnings.specialAllowance)}</TableCell>
+                              <TableCell>
+                                Auto-balanced against the remaining CTC after accounting for basic salary
+                                and other monthly earnings.
+                              </TableCell>
+                            </TableRow>
+                            <TableRow hover>
+                              <TableCell component="th" scope="row">Monthly Employee PF</TableCell>
+                              <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.deductions.employeePf)}</TableCell>
+                              <TableCell>
+                                {salaryState.pfCapped
+                                  ? `12% of monthly basic salary with the ${formatCurrency(EPF_MONTHLY_WAGE_CEILING)} EPF wage cap applied.`
+                                  : '12% of monthly basic salary without applying the EPF wage cap.'}
+                              </TableCell>
+                            </TableRow>
+                            <TableRow hover>
+                              <TableCell component="th" scope="row">Monthly Employer PF</TableCell>
+                              <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.employerContributions.employerPf)}</TableCell>
+                              <TableCell>
+                                {salaryState.pfCapped
+                                  ? `Employer-side EPF at 12% of monthly basic salary with the ${formatCurrency(EPF_MONTHLY_WAGE_CEILING)} EPF wage cap applied.`
+                                  : 'Employer-side EPF at 12% of monthly basic salary without applying the EPF wage cap.'}
+                              </TableCell>
+                            </TableRow>
+                            <TableRow hover>
+                              <TableCell component="th" scope="row">Target Annual CTC</TableCell>
+                              <TableCell sx={{ fontWeight: 'bold' }}>{formatCurrency(summary.targetAnnualGross)}</TableCell>
+                              <TableCell>This is the top-level annual CTC input used to derive monthly salary values.</TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </CardContent>
+                  </Card>
+                </Grid>
 
-              <div className="col-12 col-lg-5">
-                <div className="card border border-primary-subtle bg-light-subtle text-dark shadow-sm h-100">
-                  <div className="card-body p-4">
-                    <p className="text-uppercase small mb-2 text-body-secondary">Monthly In-Hand Salary</p>
-                    <h2 className="display-5 fw-bold">{formatCurrency(summary.monthlyInHand)}</h2>
-                    <ul className="list-group list-group-flush mt-4">
-                      <li className="list-group-item d-flex justify-content-between bg-transparent text-dark px-0">
-                        <span>Target Monthly CTC</span>
-                        <strong>{formatCurrency(summary.targetMonthlyGross)}</strong>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between bg-transparent text-dark px-0">
-                        <span>Auto Basic Salary</span>
-                        <strong>{formatCurrency(summary.earnings.basic)}</strong>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between bg-transparent text-dark px-0">
-                        <span>Employer PF Contribution</span>
-                        <strong>{formatCurrency(summary.employerContributions.employerPf)}</strong>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between bg-transparent text-dark px-0">
-                        <span>Employer NPS Contribution</span>
-                        <strong>{formatCurrency(summary.employerContributions.employerNps)}</strong>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between bg-transparent text-danger px-0">
-                        <span>Professional Tax</span>
-                        <strong>{formatCurrency(summary.deductions.professionalTax)}</strong>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between bg-transparent text-danger px-0">
-                        <span>Auto Employee PF</span>
-                        <strong>{formatCurrency(summary.deductions.employeePf)}</strong>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between bg-transparent text-danger px-0">
-                        <span>Auto Monthly Income Tax</span>
-                        <strong>{formatCurrency(summary.monthlyIncomeTax)}</strong>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between bg-transparent text-dark px-0">
-                        <span>Annual Take-Home</span>
-                        <strong>{formatCurrency(summary.annualInHand)}</strong>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+                <Grid item xs={12} lg={5}>
+                  <Card
+                    elevation={0}
+                    sx={{
+                      height: '100%',
+                      boxShadow: 1,
+                      bgcolor: 'primary.50',
+                      border: '1px solid',
+                      borderColor: 'primary.200',
+                    }}
+                  >
+                    <CardContent sx={{ p: { xs: 2, lg: 4 } }}>
+                      <Typography variant="overline" color="text.secondary" display="block" mb={1}>
+                        Monthly In-Hand Salary
+                      </Typography>
+                      <Typography variant="h3" fontWeight="bold" color="text.primary">
+                        {formatCurrency(summary.monthlyInHand)}
+                      </Typography>
 
-        <section className="row g-3 mb-4">
-          <div className="col-6 col-lg-3">
-            <div className="card border-0 shadow-sm h-100">
-              <div className="card-body">
-                <div className="text-uppercase text-body-secondary small">Monthly Gross</div>
-                <div className="fs-4 fw-semibold mt-2">{formatCurrency(summary.monthlyGross)}</div>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-lg-3">
-            <div className="card border-0 shadow-sm h-100">
-              <div className="card-body">
-                <div className="text-uppercase text-body-secondary small">Monthly Deductions</div>
-                <div className="fs-4 fw-semibold mt-2">{formatCurrency(summary.monthlyDeductions)}</div>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-lg-3">
-            <div className="card border-0 shadow-sm h-100">
-              <div className="card-body">
-                <div className="text-uppercase text-body-secondary small">Taxable Income</div>
-                <div className="fs-4 fw-semibold mt-2">{formatCurrency(taxBreakdown.taxableIncome)}</div>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-lg-3">
-            <div className="card border-0 shadow-sm h-100">
-              <div className="card-body">
-                <div className="text-uppercase text-body-secondary small">Annual Income Tax</div>
-                <div className="fs-4 fw-semibold mt-2">{formatCurrency(summary.annualIncomeTax)}</div>
-              </div>
-            </div>
-          </div>
-        </section>
+                      <List disablePadding sx={{ mt: 4 }}>
+                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+                          <ListItemText primary="Target Monthly CTC" />
+                          <Typography fontWeight="bold">{formatCurrency(summary.targetMonthlyGross)}</Typography>
+                        </ListItem>
+                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+                          <ListItemText primary="Auto Basic Salary" />
+                          <Typography fontWeight="bold">{formatCurrency(summary.earnings.basic)}</Typography>
+                        </ListItem>
+                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+                          <ListItemText primary="Employer PF Contribution" />
+                          <Typography fontWeight="bold">{formatCurrency(summary.employerContributions.employerPf)}</Typography>
+                        </ListItem>
+                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+                          <ListItemText primary="Employer NPS Contribution" />
+                          <Typography fontWeight="bold">{formatCurrency(summary.employerContributions.employerNps)}</Typography>
+                        </ListItem>
+                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
+                          <ListItemText primary="Professional Tax" />
+                          <Typography fontWeight="bold">{formatCurrency(summary.deductions.professionalTax)}</Typography>
+                        </ListItem>
+                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
+                          <ListItemText primary="Auto Employee PF" />
+                          <Typography fontWeight="bold">{formatCurrency(summary.deductions.employeePf)}</Typography>
+                        </ListItem>
+                        <ListItem disableGutters sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider', color: 'error.main' }}>
+                          <ListItemText primary="Auto Monthly Income Tax" />
+                          <Typography fontWeight="bold">{formatCurrency(summary.monthlyIncomeTax)}</Typography>
+                        </ListItem>
+                        <ListItem disableGutters sx={{ py: 1 }}>
+                          <ListItemText primary="Annual Take-Home" />
+                          <Typography fontWeight="bold">{formatCurrency(summary.annualInHand)}</Typography>
+                        </ListItem>
+                      </List>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Box>
 
-        <section className="row g-4">
-          <div className="col-12 col-xl-7">
-            <article className="card border-0 shadow-sm mb-4">
-              <div className="card-body p-4">
-                <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-                  <div>
-                    <h3 className="h4 mb-2">Monthly earnings you can adjust</h3>
-                    <p className="text-body-secondary mb-0">
+        <Grid container spacing={3} component="section" mb={4}>
+          <Grid item xs={6} lg={3}>
+            <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+              <CardContent>
+                <Typography variant="overline" color="text.secondary" display="block">
+                  Monthly Gross
+                </Typography>
+                <Typography variant="h5" fontWeight="bold" mt={1}>
+                  {formatCurrency(summary.monthlyGross)}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={6} lg={3}>
+            <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+              <CardContent>
+                <Typography variant="overline" color="text.secondary" display="block">
+                  Monthly Deductions
+                </Typography>
+                <Typography variant="h5" fontWeight="bold" mt={1}>
+                  {formatCurrency(summary.monthlyDeductions)}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={6} lg={3}>
+            <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+              <CardContent>
+                <Typography variant="overline" color="text.secondary" display="block">
+                  Taxable Income
+                </Typography>
+                <Typography variant="h5" fontWeight="bold" mt={1}>
+                  {formatCurrency(taxBreakdown.taxableIncome)}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={6} lg={3}>
+            <Card elevation={0} sx={{ height: '100%', boxShadow: 1 }}>
+              <CardContent>
+                <Typography variant="overline" color="text.secondary" display="block">
+                  Annual Income Tax
+                </Typography>
+                <Typography variant="h5" fontWeight="bold" mt={1}>
+                  {formatCurrency(summary.annualIncomeTax)}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={4} component="section">
+          <Grid item xs={12} xl={7}>
+            <Card elevation={0} sx={{ mb: 4, boxShadow: 1 }}>
+              <CardContent sx={{ p: { xs: 2, lg: 4 } }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', lg: 'row' },
+                    justifyContent: 'space-between',
+                    gap: 3,
+                    mb: 4,
+                  }}
+                >
+                  <Box>
+                    <Typography variant="h5" component="h3" mb={1}>
+                      Monthly earnings you can adjust
+                    </Typography>
+                    <Typography color="text.secondary">
                       Add recurring salary components. The remaining amount is pushed into special
                       allowance automatically.
-                    </p>
-                  </div>
-                  <span className="badge text-bg-light align-self-start">
-                    Manual earnings: {formatCurrency(summary.manualEarningTotal)}
-                  </span>
-                </div>
-                <div className="row g-3">
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={`Manual earnings: ${formatCurrency(summary.manualEarningTotal)}`}
+                    sx={{ alignSelf: 'flex-start' }}
+                  />
+                </Box>
+                <Grid container spacing={3}>
                   {earningFields.map((field) => (
                     <NumberField
                       key={field.key}
@@ -408,32 +483,43 @@ function App() {
                       onChange={updateGroupValue('earnings')}
                     />
                   ))}
-                </div>
-              </div>
-            </article>
+                </Grid>
+              </CardContent>
+            </Card>
 
-            <article className="card border-0 shadow-sm">
-              <div className="card-body p-4">
-                <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-                  <div>
-                    <h3 className="h4 mb-2">Monthly deductions</h3>
-                    <p className="text-body-secondary mb-0">
+            <Card elevation={0} sx={{ boxShadow: 1 }}>
+              <CardContent sx={{ p: { xs: 2, lg: 4 } }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', lg: 'row' },
+                    justifyContent: 'space-between',
+                    gap: 3,
+                    mb: 4,
+                  }}
+                >
+                  <Box>
+                    <Typography variant="h5" component="h3" mb={1}>
+                      Monthly deductions
+                    </Typography>
+                    <Typography color="text.secondary">
                       Enter payroll deductions. Employee PF and income tax are calculated
                       automatically. Employer NPS is entered as a percentage of basic for tax
                       deduction under section 80CCD(2).
-                    </p>
-                  </div>
-                  <span className="badge text-bg-light align-self-start">
-                    Other deductions: {formatCurrency(otherDeductions)}
-                  </span>
-                </div>
-                <div className="alert alert-info" role="note">
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={`Other deductions: ${formatCurrency(otherDeductions)}`}
+                    sx={{ alignSelf: 'flex-start' }}
+                  />
+                </Box>
+                <Alert severity="info" sx={{ mb: 3 }} role="note">
                   Employee PF is auto-derived from basic salary. Employer NPS is treated as an
                   employer-side contribution and reduces taxable income under the new regime in this
                   calculator, capped at {(EMPLOYER_NPS_DEDUCTION_RATE_CAP * 100).toFixed(0)}% of
                   basic.
-                </div>
-                <div className="row g-3">
+                </Alert>
+                <Grid container spacing={3}>
                   {deductionFields.map((field) => (
                     <NumberField
                       key={field.key}
@@ -442,32 +528,43 @@ function App() {
                       onChange={updateGroupValue('deductions')}
                     />
                   ))}
-                </div>
-              </div>
-            </article>
-          </div>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
 
-          <div className="col-12 col-xl-5">
-            <article className="card border-0 shadow-sm mb-4">
-              <div className="card-body p-4">
-                <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
-                  <div>
-                    <h3
-                      className="h4 mb-0 d-inline-block"
-                      data-bs-toggle="tooltip"
-                      data-bs-placement="top"
+          <Grid item xs={12} xl={5}>
+            <Card elevation={0} sx={{ mb: 4, boxShadow: 1 }}>
+              <CardContent sx={{ p: { xs: 2, lg: 4 } }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    gap: 3,
+                    mb: 3,
+                  }}
+                >
+                  <Box>
+                    <Tooltip
                       title="New regime for salaried employees with standard deduction and 4% cess."
-                      tabIndex="0"
-                      role="button"
-                      aria-label="Auto income tax breakdown info"
+                      placement="top"
                     >
-                      Auto income tax breakdown
-                    </h3>
-                  </div>
-                  <span className="badge text-bg-light">Auto</span>
-                </div>
+                      <Typography
+                        variant="h6"
+                        component="h3"
+                        sx={{ display: 'inline-block', cursor: 'pointer', m: 0 }}
+                        tabIndex={0}
+                        aria-label="Auto income tax breakdown info"
+                      >
+                        Auto income tax breakdown
+                      </Typography>
+                    </Tooltip>
+                  </Box>
+                  <Chip label="Auto" />
+                </Box>
 
-                <ul className="list-group">
+                <List disablePadding sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, overflow: 'hidden' }}>
                   <BreakdownItem label="Annual Gross Salary" value={formatCurrency(summary.annualGross)} />
                   <BreakdownItem
                     label="Standard Deduction"
@@ -499,13 +596,13 @@ function App() {
                     value={formatCurrency(summary.monthlyIncomeTax)}
                     emphasize
                   />
-                </ul>
-              </div>
-            </article>
-          </div>
-        </section>
-      </div>
-    </main>
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }
 
