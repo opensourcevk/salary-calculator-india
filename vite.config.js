@@ -6,6 +6,11 @@ export default defineConfig({
   base: '/salary-calculator-india/',
   test: {
     environment: 'jsdom',
-    setupFiles: './src/test/setup.js'
+    setupFiles: './src/test/setup.js',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      reportsDirectory: 'coverage'
+    }
   }
 });
